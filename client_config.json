@@ -1,0 +1,36 @@
+{
+  "mode": "client",
+  "listen_addr": "0.0.0.0:51820",
+  "server_upstream": "192.168.123.53:9001",
+  "server_downstream": "192.168.123.53:9002",
+  "reconnect_interval": 5,
+  "session_timeout": 300,
+  "buffer_size": 65536,
+  "max_packet_size": 65536,
+  "log_level": "info",
+  "upstream_crypto": {
+    "type": "aes-256-gcm",
+    "password": "%2Qu#?hNJ{KJ()h)M%_d}k&?x$f:se6_"
+  },
+  "downstream_crypto": {
+    "type": "chacha20-poly1305",
+    "password": "6f|-:5K2uCJjSV4crP8]4;cb)*c68#;p"
+  },
+  "multicore": true,
+  "lock_os_thread": false,
+  "load_balancing": "least_connections",
+  "num_event_loop": 0,
+  "reuse_addr": true,
+  "reuse_port": true,
+  "socket_recv_buffer": 65536,
+  "socket_send_buffer": 65536,
+  "tcp_keep_alive": 30,
+  "tcp_no_delay": true,
+  "ticker": false,
+  "read_buffer_cap": 65536,
+  "write_buffer_cap": 65536,
+  "edge_triggered_io": false,
+  "edge_triggered_io_chunk": 8192,
+  "bind_to_device": "",
+  "log_path": ""
+}
