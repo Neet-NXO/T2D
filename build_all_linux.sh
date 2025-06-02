@@ -3,8 +3,6 @@
 # T2D 多架构编译脚本
 # 支持编译所有常见的 Linux 架构版本
 
-set -e
-
 APP_NAME="T2D"
 CMD_DIR="cmd/t2d"
 BUILD_DIR="build"
