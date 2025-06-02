@@ -3,7 +3,7 @@
 # 变量定义
 APP_NAME = T2D
 BUILD_DIR = build
-CMD_DIR = cmd/$(APP_NAME)
+CMD_DIR = cmd/t2d
 GO_FILES = $(shell find . -name '*.go' -type f)
 
 # 默认目标
