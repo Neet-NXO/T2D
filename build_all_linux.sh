@@ -48,7 +48,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}T2D-GNET 多架构编译脚本${NC}"
+echo -e "${BLUE}T2D 多架构编译脚本${NC}"
 echo -e "${BLUE}版本: ${VERSION}${NC}"
 echo -e "${BLUE}构建时间: ${BUILD_TIME}${NC}"
 echo -e "${BLUE}Git提交: ${GIT_COMMIT}${NC}"
@@ -157,7 +157,7 @@ echo ""
 
 # 创建发布信息文件
 cat > ${BUILD_DIR}/RELEASE_INFO.txt << EOF
-T2D-GNET Release Information
+T2D Release Information
 ============================
 
 版本: ${VERSION}
