@@ -75,17 +75,41 @@ install:
 	go install ./$(CMD_DIR)
 	@echo "Install completed"
 
+# 多架构编译
+.PHONY: build-all
+build-all:
+	@echo "Building for all Linux platforms..."
+	./build_all_linux.sh
+	@echo "Multi-platform build completed"
+
+# 快速编译常用架构
+.PHONY: build-common
+build-common:
+	@echo "Building for common platforms..."
+	@mkdir -p $(BUILD_DIR)
+	@echo "Building for linux/amd64..."
+	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(APP_NAME)-linux-amd64 ./$(CMD_DIR)
+	@echo "Building for linux/arm64..."
+	GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(APP_NAME)-linux-arm64 ./$(CMD_DIR)
+	@echo "Building for linux/386..."
+	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(APP_NAME)-linux-386 ./$(CMD_DIR)
+	@echo "Building for linux/arm (v7)..."
+	GOOS=linux GOARCH=arm GOARM=7 go build -ldflags="-s -w" -o $(BUILD_DIR)/$(APP_NAME)-linux-armv7 ./$(CMD_DIR)
+	@echo "Common platforms build completed"
+
 # 显示帮助
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  build      - Build the application"
-	@echo "  clean      - Clean build directory"
-	@echo "  run-client - Build and run client"
-	@echo "  run-server - Build and run server"
-	@echo "  fmt        - Format Go code"
-	@echo "  vet        - Run go vet"
-	@echo "  deps       - Download and tidy dependencies"
-	@echo "  test       - Run tests"
-	@echo "  install    - Install the application"
-	@echo "  help       - Show this help message"
+	@echo "  build        - Build the application"
+	@echo "  build-all    - Build for all Linux platforms"
+	@echo "  build-common - Build for common platforms (amd64, arm64, 386, armv7)"
+	@echo "  clean        - Clean build directory"
+	@echo "  run-client   - Build and run client"
+	@echo "  run-server   - Build and run server"
+	@echo "  fmt          - Format Go code"
+	@echo "  vet          - Run go vet"
+	@echo "  deps         - Download and tidy dependencies"
+	@echo "  test         - Run tests"
+	@echo "  install      - Install the application"
+	@echo "  help         - Show this help message"
