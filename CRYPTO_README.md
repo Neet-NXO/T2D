@@ -1,145 +1,84 @@
-# T2D 加密功能说明
+# T2D 加密说明
 
-## 概述
+T2D 的加密是按方向独立配置的：
+- 上行方向使用 `upstream_crypto`
+- 下行方向使用 `downstream_crypto`
 
-T2D 现在支持对TCP连接的上行和下行数据进行加密，提供多种加密算法选择。
+这两个方向可以使用不同算法、不同密码。
 
-## 支持的加密算法
+## 支持的加密类型
 
-### 1. AES-256-GCM
-- **类型**: `aes-256-gcm`
-- **密钥长度**: 256位
-- **需要密码**: 是
-- **特点**: 高安全性，广泛支持
+- `aes-256-gcm`
+- `aes-128-gcm`
+- `chacha20-poly1305`
+- `xchacha20-poly1305`
+- `none`
+- `xor`
 
-### 2. AES-128-GCM
-- **类型**: `aes-128-gcm`
-- **密钥长度**: 128位
-- **需要密码**: 是
-- **特点**: 较快的加密速度
+## 密码规则
 
-### 3. ChaCha20-Poly1305
-- **类型**: `chacha20-poly1305`
-- **密钥长度**: 256位
-- **需要密码**: 是
-- **特点**: 现代流密码，在移动设备上性能优异
+- `none` / `xor`：密码可省略。
+- 其余算法：必须提供 `password`。
+- 同一方向上，客户端与服务端必须完全一致（类型+密码）。
 
-### 4. XChaCha20-Poly1305
-- **类型**: `xchacha20-poly1305`
-- **密钥长度**: 256位
-- **需要密码**: 是
-- **特点**: 扩展nonce版本，更高安全性
+## 方向匹配规则
 
-### 5. 无加密
-- **类型**: `none`
-- **需要密码**: 否
-- **特点**: 不进行加密，直接传输
+- 客户端 `upstream_crypto` <-> 服务端 `upstream_crypto`
+- 客户端 `downstream_crypto` <-> 服务端 `downstream_crypto`
 
-### 6. XOR混淆
-- **类型**: `xor`
-- **需要密码**: 否
-- **特点**: 简单的XOR混淆，仅用于基本的数据混淆
+只要同方向匹配即可，不要求上下行必须用同一个算法。
 
-## 重要说明
+## 常见配置示例
 
-### 1. 密码要求
-- 当选择 `none` 或 `xor` 时，无需提供密码
-- 其他所有加密算法都需要提供密码
-- 客户端和服务器端必须使用相同的密码
+### 示例 1：上下行都用 AES-256-GCM
 
-### 2. 上行和下行加密
-- **上行加密**: 客户端加密 → 服务器端解密
-- **下行加密**: 服务器端加密 → 客户端解密
-- 上行和下行可以使用不同的加密算法和密码
-
-### 3. 配置匹配
-- 客户端的 `upstream_crypto` 必须与服务器端的 `upstream_crypto` 匹配
-- 客户端的 `downstream_crypto` 必须与服务器端的 `downstream_crypto` 匹配
-
-## 使用示例
-
-### 示例1: 使用AES-256-GCM加密
-
-客户端配置:
 ```json
 "upstream_crypto": {
   "type": "aes-256-gcm",
-  "password": "my-super-secret-key-2024"
+  "password": "upstream-strong-pass"
 },
 "downstream_crypto": {
   "type": "aes-256-gcm",
-  "password": "my-super-secret-key-2024"
+  "password": "downstream-strong-pass"
 }
 ```
 
-服务器端配置:
-```json
-"upstream_crypto": {
-  "type": "aes-256-gcm",
-  "password": "my-super-secret-key-2024"
-},
-"downstream_crypto": {
-  "type": "aes-256-gcm",
-  "password": "my-super-secret-key-2024"
-}
-```
-
-### 示例2: 使用ChaCha20-Poly1305加密
+### 示例 2：上下行使用不同算法
 
 ```json
 "upstream_crypto": {
-  "type": "chacha20-poly1305",
-  "password": "chacha20-secret-2024"
+  "type": "aes-128-gcm",
+  "password": "upstream-pass"
 },
 "downstream_crypto": {
   "type": "xchacha20-poly1305",
-  "password": "xchacha20-secret-2024"
+  "password": "downstream-pass"
 }
 ```
 
-### 示例3: 混合配置
+### 示例 3：测试环境关闭加密
 
 ```json
-"upstream_crypto": {
-  "type": "aes-256-gcm",
-  "password": "upstream-password"
-},
-"downstream_crypto": {
-  "type": "chacha20-poly1305",
-  "password": "downstream-password"
-}
+"upstream_crypto": {"type": "none"},
+"downstream_crypto": {"type": "none"}
 ```
 
-### 示例4: 无加密
+## 算法选择建议
 
-```json
-"upstream_crypto": {
-  "type": "none"
-},
-"downstream_crypto": {
-  "type": "none"
-}
-```
+- 高安全优先：`aes-256-gcm` / `xchacha20-poly1305`
+- 性能与兼容平衡：`aes-128-gcm` / `chacha20-poly1305`
+- 调试：`none`
+- `xor` 仅是简单混淆，不是安全加密
 
-## 安全建议
+## 说明（实现层面）
 
-1. **使用强密码**: 建议使用至少32个字符的随机密码
-2. **定期更换密码**: 建议定期更换加密密码
-3. **选择合适的算法**: 
-   - 对于高安全性要求: 推荐 `aes-256-gcm` 或 `xchacha20-poly1305`
-   - 对于性能要求: 推荐 `aes-128-gcm` 或 `chacha20-poly1305`
-4. **避免使用弱加密**: 生产环境中避免使用 `none` 或 `xor`
+- AEAD 算法每个数据包都会带随机 nonce。
+- 每个方向的加密/解密独立执行，不共享状态。
+- 程序会在创建加密器时校验必填密码，缺失会直接报错并退出。
 
-## 故障排除
+## 常见错误与处理
 
-### 常见错误
-
-1. **密码不匹配**: 确保客户端和服务器端使用相同的密码
-2. **算法不匹配**: 确保客户端和服务器端使用相同的加密算法
-3. **缺少密码**: 使用需要密码的算法时必须提供密码
-
-### 调试建议
-
-1. 检查日志中的加密/解密错误信息
-2. 验证配置文件中的加密配置是否正确
-3. 确认客户端和服务器端的配置是否匹配
+- 报错 `unsupported cipher type`：算法名拼写错误。
+- 报错 `password required`：选择了需要密码的算法但未配置密码。
+- 连上后大量解密失败：通常是同方向密码或算法不一致。
+- 单向正常、反向失败：优先核对下行方向配置是否对齐。
