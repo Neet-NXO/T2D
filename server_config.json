@@ -1,0 +1,19 @@
+{
+  "mode": "server",
+  "upstream_port": ":9001",
+  "downstream_port": ":9002",
+  "backend_addr": "127.0.0.1:51820",
+  "reconnect_interval": 5,
+  "session_timeout": 300,
+  "buffer_size": 4194304,
+  "max_packet_size": 65536,
+  "log_level": "info",
+  "upstream_crypto": {
+    "type": "none",
+    "password": ""
+  },
+  "downstream_crypto": {
+    "type": "none",
+    "password": ""
+  }
+}

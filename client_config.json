@@ -1,0 +1,21 @@
+{
+  "mode": "client",
+  "listen_addr": "0.0.0.0:51820",
+  "server_upstream": "100.10.0.1:9001",
+  "server_downstream": "100.10.0.1:9002",
+  "reconnect_interval": 1,
+  "reconnect_max_interval": 16,
+  "reconnect_jitter_ms": 250,
+  "session_timeout": 300,
+  "buffer_size": 4194304,
+  "max_packet_size": 1500,
+  "log_level": "info",
+  "upstream_crypto": {
+    "type": "none",
+    "password": ""
+  },
+  "downstream_crypto": {
+    "type": "none",
+    "password": ""
+  }
+}
